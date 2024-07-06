@@ -9,6 +9,7 @@ export default class DishHelper {
   tagToDish: {
     [tagID: string]: string;
   } = {};
+  // Maps every menuItemID to a dish
   dishData: {
     [dishID: string]: DishInfo;
   } = {};
@@ -31,7 +32,6 @@ export default class DishHelper {
     );
 
     const tagToDish: { [tagID: string]: string } = {};
-    const dishData: { [dishID: string]: DishInfo } = {};
 
     for (const tag of tags) {
       tagToDish[tag.tagID] = tag.menuItemID;
@@ -40,6 +40,8 @@ export default class DishHelper {
     const dish_data = await API.apiCall("dish_data").then(
       (response) => response.dish_data
     );
+
+    const dishData: { [dishID: string]: DishInfo } = {};
 
     for (const dish of dish_data) {
       dishData[dish.id] = dish;

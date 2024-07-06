@@ -10,7 +10,7 @@ export default class API {
     for (const tagID in tags) {
       plateProps.push({
         tagID: tagID,
-        timesSeen: tags[tagID],
+        timesSeen: tags[tagID].map((time: string) => Number(time)),
       });
     }
 

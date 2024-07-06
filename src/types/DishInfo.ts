@@ -8,3 +8,14 @@ export default interface DishInfo {
   categoryID: string;
   stationID: string;
 }
+
+export interface BeltData {
+  plateData: {
+    [categoryID: string]: {
+      [name: string]: number;
+    };
+  };
+  expired: number;
+  almostExpired: number;
+  total: number;
+}
