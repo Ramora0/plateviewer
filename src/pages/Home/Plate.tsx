@@ -1,37 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { TagReads } from '../../types/TagReads';
 import Formatter from '../../helpers/Formatter';
-import { timeLeft, timeToSeen } from '../../App';
+import { timeToSeen } from '../../App';
 
 const Plate: React.FC<TagReads & {
   currentTime: number;
   urgent: boolean;
 }> = ({ tagID, timesSeen, currentTime, dishData, urgent }) => {
-  const [shown, setShown] = useState(false);
-
-  useEffect(() => {
-    setShown(timeToSeen(timesSeen, currentTime) < 24 * 1000);
-  }, [timesSeen, currentTime]);
-
   if (!dishData) {
     return <div>Loading...</div>;
   }
   const isExpired = currentTime - timesSeen[0] > dishData.expirationTime;
+  const isShown = timeToSeen(timesSeen, currentTime) < 20 * 1000;
 
   let color;
 
   if (isExpired) {
-    if (shown) {
+    if (isShown) {
       color = 'red';
     } else {
       color = 'darkred';
     }
   } else {
-    if (shown) {
-      color = 'darkorange';
-    } else {
-      color = 'black'
-    }
+    return <></>;
+    // if (isShown) {
+    //   color = 'darkorange';
+    // } else {
+    //   color = 'black'
+    // }
   }
 
   return (

@@ -30,8 +30,8 @@ export default function Home({ plates, currentTime, beltData }: {
           background: 'white'
         }}>
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'end' }}>
-            <h2>Namez</h2>
-            <h4>Time until passed</h4>
+            <h2>Expired Plates</h2>
+            <h4>Countdown</h4>
           </div>
           {plates.filter((plate) => timeToSeen(plate.timesSeen, currentTime) > 0).map((plate, index) => (
             <Plate

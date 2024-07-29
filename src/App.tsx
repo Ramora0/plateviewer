@@ -18,7 +18,7 @@ export function timeToSeen(timesSeen: number[], currentTime: number) {
   }
 
   const beltTime = timesSeen.length === 1 ? (785150) : timesSeen[1] - timesSeen[0];
-  const endSesh = (timesSeen[timesSeen.length - 1]) + beltTime;
+  const endSesh = (timesSeen[timesSeen.length - 1]) + beltTime - 14 * 1000;
   const timeUntil = (endSesh - currentTime);
   return timeUntil;
 }
@@ -125,6 +125,12 @@ function App() {
               });
               plates = plates.sort((a, b) => {
                 return timeToSeen(a.timesSeen, new Date().getTime()) - timeToSeen(b.timesSeen, new Date().getTime());
+              });
+
+              plates = plates.filter((plate) => {
+                return plate.dishData?.name !== 'Shrimp Dumplings' &&
+                  plate.dishData?.name !== 'Chicken Dumplings' &&
+                  plate.dishData?.name !== 'Vegetable Spring Rolls';
               });
 
               setPlates(plates);
