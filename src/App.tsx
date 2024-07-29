@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import { TagReads } from './types/TagReads';
-import Plate from './Plate';
 import API from './helpers/API';
 import DishHelper from './helpers/DishHelper';
-import DishInfo, { BeltData } from './types/DishInfo';
-import Table from './Table';
+import DishInfo, { BeltData, CategoryData } from './types/DishInfo';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Home from './pages/Home/Home';
+import Admin from './pages/Admin/Admin';
 
 export function timeLeft(timesSeen: number[], dishData: DishInfo, currentTime: number) {
   return dishData!.expirationTime - (currentTime - timesSeen[0]);
@@ -43,56 +44,76 @@ function App() {
 
   //Calculate belt data
   useEffect(() => {
-    const plateData: { [categoryID: string]: { [name: string]: number } } = {};
+    const categoryData: { [categoryID: string]: CategoryData } = {};
     let almostExpired = 0;
     let expired = 0;
 
     plates.forEach((plate) => {
-      const categoryID = plate.dishData!.categoryID;
-      const name = plate.dishData!.name;
-
-      if (!plateData[categoryID]) {
-        plateData[categoryID] = {};
+      if (!plate.dishData) {
+        console.log('no dish data', plate);
+        return;
       }
 
-      if (!plateData[categoryID][name]) {
-        plateData[categoryID][name] = 0;
+      const categoryID = plate.dishData.categoryID;
+      const name = plate.dishData.name;
+
+      if (!categoryData[categoryID]) {
+        categoryData[categoryID] = {
+          plates: {},
+          expired: 0,
+          almostExpired: 0,
+          total: 0,
+          averageAge: 0,
+        };
       }
 
-      plateData[categoryID][name] += 1;
+      if (!categoryData[categoryID].plates[name]) {
+        categoryData[categoryID].plates[name] = 0;
+      }
+
+      categoryData[categoryID].plates[name] += 1;
+      categoryData[categoryID].total += 1;
+      categoryData[categoryID].averageAge += currentTime - plate.timesSeen[0];
 
       if (daTimeLeft(plate) < 0) {
         expired += 1;
+        categoryData[categoryID].expired += 1;
       } else if (daTimeLeft(plate) < plate.timesSeen[1] - plate.timesSeen[0]) {
         almostExpired += 1;
+        categoryData[categoryID].almostExpired += 1;
       }
     });
 
+    for (const categoryID in categoryData) {
+      categoryData[categoryID].averageAge /= categoryData[categoryID].total;
+    }
+
     const data = {
-      plateData,
-      total: plates.length,
+      categoryData,
+      total: plates.length, //Why on gods green earth does this not include expired and almost expired plates??
       almostExpired,
       expired,
     }
 
     setBeltData(data);
-  }, [plates]);
+  }, [plates, currentTime]);
 
-  //
   useEffect(() => {
     let intervalId: NodeJS.Timeout; // This will hold the ID of the interval so we can clear it later
+
 
     const fetchData = async () => {
       try {
         console.log('running');
-        const dishHelper = await DishHelper.getData();
-        setDishHelper(dishHelper);
+
+        const dishHelper = await refreshDishData();
+
         let loopNumber = 0;
 
         intervalId = setInterval(() => {
           setCurrentTime(new Date().getTime());
-          // console.log(loopNumber);
-          if (loopNumber % 10 === 0) {
+          // console.log('loop number', loopNumber);
+          if (loopNumber % 100 === 0) {
             API.getPlates().then((plates) => {
               plates = plates.filter((plate) => plate.timesSeen.length > 0);
               plates = plates.map((plate) => {
@@ -113,7 +134,6 @@ function App() {
               // })
 
               // setPlatesThatAreExpiredBecauseTheyHaveBeenOnTheBeltTooLongAndAreNotSafeToEat(plates);
-              console.log(plates.length);
             });
           } else {
             setPlates((plates) => {
@@ -136,24 +156,19 @@ function App() {
     };
   }, []);
 
+  async function refreshDishData() {
+    const dh = await DishHelper.getData();
+    setDishHelper(dh);
+    return dh;
+  }
+
   return (
-    <div className="App" style={{ display: 'flex', flexDirection: 'row' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', overflow: 'auto', height: '100vh', width: '500px' }}>
-        {plates.filter((plate) => timeToSeen(plate.timesSeen, currentTime) > 0).map((plate, index) => (
-          <Plate
-            key={index}
-            tagID={plate.tagID}
-            currentTime={currentTime}
-            timesSeen={plate.timesSeen}
-            dishData={plate.dishData}
-            urgent={true}
-          />
-        ))}
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <Table beltData={beltData} />
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home plates={plates} beltData={beltData} currentTime={currentTime} />} />
+        <Route path="/admin" element={<Admin dishHelper={dishHelper} refreshDishData={refreshDishData} setDishHelper={setDishHelper} plates={plates} setPlates={setPlates} />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

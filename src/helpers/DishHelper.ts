@@ -6,8 +6,8 @@ export default class DishHelper {
   static url = "https://rfp7desgu5.execute-api.us-east-1.amazonaws.com/prod";
 
   // Maps every tagID to a menuItemID
-  tagToDish: {
-    [tagID: string]: string;
+  tagInfo: {
+    [tagID: string]: TagInfo;
   } = {};
   // Maps every menuItemID to a dish
   dishData: {
@@ -17,11 +17,11 @@ export default class DishHelper {
   ready: boolean = false;
 
   constructor(
-    tagToDish: { [tagID: string]: string } = {},
+    tagInfo: { [tagID: string]: TagInfo } = {},
     dishData: { [dishID: string]: DishInfo } = {},
     ready: boolean = false
   ) {
-    this.tagToDish = tagToDish;
+    this.tagInfo = tagInfo;
     this.dishData = dishData;
     this.ready = ready;
   }
@@ -31,10 +31,10 @@ export default class DishHelper {
       (response) => response.ids
     );
 
-    const tagToDish: { [tagID: string]: string } = {};
+    const tagInfo: { [tagID: string]: TagInfo } = {};
 
     for (const tag of tags) {
-      tagToDish[tag.tagID] = tag.menuItemID;
+      tagInfo[tag.tagID] = tag;
     }
 
     const dish_data = await API.apiCall("dish_data").then(
@@ -44,14 +44,17 @@ export default class DishHelper {
     const dishData: { [dishID: string]: DishInfo } = {};
 
     for (const dish of dish_data) {
-      dishData[dish.id] = dish;
+      dishData[dish.id] = {
+        ...dish,
+        expirationTime: parseInt(dish.expirationTime),
+      };
     }
 
-    return new DishHelper(tagToDish, dishData, true);
+    return new DishHelper(tagInfo, dishData, true);
   }
 
   getDishID(tagID: string): string {
-    return this.tagToDish[tagID];
+    return this.tagInfo[tagID].menuItemID;
   }
 
   getDishData(dishID: string): DishInfo {

@@ -23,4 +23,24 @@ export default class API {
     const response = await fetch(toURL).then((response) => response.json());
     return response;
   }
+
+  static async postAPICall(path: string, data: any): Promise<any> {
+    const toURL = `${API.url}/${path}`;
+    console.log(toURL);
+    const response = await fetch(toURL, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }).then((response) => response.json());
+    return response;
+  }
+
+  static async getAPICall(path: string): Promise<any> {
+    const toURL = `${API.url}/${path}`;
+    console.log(toURL);
+    const response = await fetch(toURL, {
+      method: "GET",
+    }).then((response) => response.json());
+    console.log("RESPONSE", response);
+    return response;
+  }
 }

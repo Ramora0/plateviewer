@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { TagReads } from './types/TagReads';
-import Formatter from './helpers/Formatter';
-import { timeLeft, timeToSeen } from './App';
+import { TagReads } from '../../types/TagReads';
+import Formatter from '../../helpers/Formatter';
+import { timeLeft, timeToSeen } from '../../App';
 
 const Plate: React.FC<TagReads & {
   currentTime: number;
@@ -39,13 +39,14 @@ const Plate: React.FC<TagReads & {
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'space-between',
+      borderBottom: '1px solid #BBB',
     }}>
       {/* <h2 style={{ marginRight: '10px', color: isExpired ? 'red' : 'inherit' }}>{tagID}</h2>
       <h2 style={{ marginRight: '10px', color: isExpired ? 'red' : 'inherit' }}>{dishData.id}</h2> */}
-      <h2 style={{ marginRight: '10px', color }}>{dishData.name}</h2>
-      <p style={{ color }}>
-
-        {Formatter.formatTime(Math.abs(timeLeft(timesSeen, dishData, currentTime)))} /
+      <h4 style={{ color, margin: '0px', marginTop: '10px' }}>{dishData.name}</h4>
+      <p>
+        {/* {Formatter.formatTime(Math.abs(timeLeft(timesSeen, dishData, currentTime)))} / */}
         {Formatter.formatTime(timeToSeen(timesSeen, currentTime))}
       </p>
     </div>
