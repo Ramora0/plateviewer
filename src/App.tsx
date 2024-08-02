@@ -19,7 +19,7 @@ export function timeToSeen(timesSeen: number[], currentTime: number) {
 
   const beltTime = timesSeen.length === 1 ? (785150) : timesSeen[1] - timesSeen[0];
   const endSesh = (timesSeen[timesSeen.length - 1]) + beltTime - 14 * 1000;
-  const timeUntil = (endSesh - currentTime);
+  const timeUntil = (endSesh - currentTime + beltTime) % beltTime;
   return timeUntil;
 }
 
@@ -113,7 +113,7 @@ function App() {
         intervalId = setInterval(() => {
           setCurrentTime(new Date().getTime());
           // console.log('loop number', loopNumber);
-          if (loopNumber % 100 === 0) {
+          if (loopNumber % 20 === 0) {
             API.getPlates().then((plates) => {
               plates = plates.filter((plate) => plate.timesSeen.length > 0);
               plates = plates.map((plate) => {

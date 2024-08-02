@@ -1,7 +1,7 @@
 import React from 'react';
 import { TagReads } from '../../types/TagReads';
 import Formatter from '../../helpers/Formatter';
-import { timeToSeen } from '../../App';
+import { timeLeft, timeToSeen } from '../../App';
 
 const Plate: React.FC<TagReads & {
   currentTime: number;
@@ -11,6 +11,7 @@ const Plate: React.FC<TagReads & {
     return <div>Loading...</div>;
   }
   const isExpired = currentTime - timesSeen[0] > dishData.expirationTime;
+  const isAlmostExpired = currentTime - timesSeen[0] > dishData.expirationTime - 15 * 60 * 1000;
   const isShown = timeToSeen(timesSeen, currentTime) < 20 * 1000;
 
   let color;
@@ -21,13 +22,14 @@ const Plate: React.FC<TagReads & {
     } else {
       color = 'darkred';
     }
+  } else if (isAlmostExpired) {
+    if (isShown) {
+      color = 'orange';
+    } else {
+      color = 'black'
+    }
   } else {
     return <></>;
-    // if (isShown) {
-    //   color = 'darkorange';
-    // } else {
-    //   color = 'black'
-    // }
   }
 
   return (
@@ -42,7 +44,7 @@ const Plate: React.FC<TagReads & {
       <h2 style={{ marginRight: '10px', color: isExpired ? 'red' : 'inherit' }}>{dishData.id}</h2> */}
       <h4 style={{ color, margin: '0px', marginTop: '10px' }}>{dishData.name}</h4>
       <p>
-        {/* {Formatter.formatTime(Math.abs(timeLeft(timesSeen, dishData, currentTime)))} / */}
+        {Formatter.formatTime(Math.abs(timeLeft(timesSeen, dishData, currentTime))) + ' / '}
         {Formatter.formatTime(timeToSeen(timesSeen, currentTime))}
       </p>
     </div>

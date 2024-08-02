@@ -7,6 +7,8 @@ export default interface DishInfo {
   categoryID: string;
   stationID: string;
   ingredients?: string[];
+  color?: string;
+  tags?: string[];
 }
 
 export interface BeltData {

@@ -12,6 +12,11 @@ export default function EditDishInfo({ dishInfo, setDishHelper, setEditID }: {
   const [expirationTime, setExpirationTime] = useState<number>(dishInfo.expirationTime);
   const [name, setName] = useState<string>(dishInfo.name);
   const [categoryID, setCategoryID] = useState<string>(dishInfo.categoryID);
+  const [color, setColor] = useState<string | undefined>(dishInfo.color ?? undefined);
+  const [tags, setTags] = useState<string[]>(dishInfo.tags ?? []);
+
+  const plateColors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+  const tagTypes = ['Cooked', 'Spicy', 'Vegi', 'Gluten Free', 'Raw'];
 
   function submit() {
     setDishHelper((old) => {
@@ -19,6 +24,8 @@ export default function EditDishInfo({ dishInfo, setDishHelper, setEditID }: {
       newDishData.expirationTime = expirationTime;
       newDishData.name = name;
       newDishData.categoryID = categoryID;
+      newDishData.color = color;
+      newDishData.tags = tags;
       old.dishData[dishInfo.id] = newDishData;
       return old;
     });
@@ -45,6 +52,39 @@ export default function EditDishInfo({ dishInfo, setDishHelper, setEditID }: {
             </option>
           ))}
         </select>
+      </div>
+      <div>
+        Plate color:
+        <select
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+        >
+          {plateColors.map((color) => (
+            <option key={color} value={color}>{color}</option>
+          ))}
+        </select>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div>
+          Tags: {tags.join(', ')}
+          <button onClick={() => setTags([])}>Clear</button>
+        </div>
+        <div>
+          {tagTypes.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => setTags((old) => {
+                if (old.includes(tag)) {
+                  return old.filter((t) => t !== tag);
+                } else {
+                  return [...old, tag];
+                }
+              })}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
       </div>
       <button onClick={() => setEditID(null)}>Cancel</button>
       <button onClick={submit}>Submit</button>

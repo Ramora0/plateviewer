@@ -78,6 +78,15 @@ export default function Admin({ dishHelper, refreshDishData, setDishHelper, plat
   return ( //loggedIn ? (
     <div style={{ display: 'flex', flexDirection: 'row' }}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <Select
+          value={null}
+          options={Object.values(dishHelper.dishData).map((dish) => ({ value: dish.id, label: dish.name }))}
+          onChange={(selectedOption) => {
+            if (selectedOption === null) return;
+
+            setEditID(selectedOption.value);
+          }}
+        />
         <button onClick={saveChanges}>Save Changes</button>
         <button onClick={addRoll}>Add Roll</button>
         <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 80px)' }}>

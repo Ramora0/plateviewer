@@ -13,7 +13,7 @@ export default function Home({ plates, currentTime, beltData }: {
   const navigate = useNavigate();
 
   return (
-    <div className="App" style={{ display: 'flex', flexDirection: 'row', background: '#EEE' }}>
+    <div style={{ display: 'flex', flexDirection: 'row', background: '#EEE' }}>
       <div style={{
         display: 'flex',
         flexDirection: 'column',
