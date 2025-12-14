@@ -18,7 +18,7 @@ export default class API {
   }
 
   static async apiCall(id: string): Promise<any> {
-    const toURL = `${API.url}/get-data?id=${id}`;
+    const toURL = `${API.url}/get-data?id=${id}&is_ipad=true`;
     console.log(toURL);
     const response = await fetch(toURL).then((response) => response.json());
     return response;
